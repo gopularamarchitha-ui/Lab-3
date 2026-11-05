@@ -1,143 +1,221 @@
-# Lab 3: REST API, query parameters, validation, debugging
+# Backend Development Fundamentals – Lab 3
 
-## Student details
-- Name: YOUR NAME
-- Registration number: YOUR REGISTRATION NUMBER
-- Section: YOUR SECTION
+## Student Details
 
-## Live link
-Not deployed yet. Add the deployed public URL here after deployment. If deployment is not possible, explain why and include Postman screenshots of every endpoint.
+- **Name:** Gopularam Architha
+- **Registration Number:** 252U1R6084
+- **Section:** AIML-2B
 
-## Technologies
+## 1. Project Title
+
+**Book Management REST API using Node.js, Express.js and SQLite**
+
+## 2. Project Description
+
+This project implements a RESTful API for managing book records using Node.js, Express.js and SQLite.
+
+The API supports CRUD operations, searching, sorting, pagination and price-range filtering. It also includes input validation and consistent JSON error handling.
+
+## 3. Technologies Used
+
 - Node.js
-- Express
+- Express.js
 - SQLite
+- JavaScript
 - Postman
+- Visual Studio Code
+- Git and GitHub
+- Render (Deployment)
 
-## Install and run
-1. Install Node.js.
-2. Open a terminal in this `lab-03` directory.
-3. Install dependencies:
+## 4. Installation and Setup
 
-   ```bash
-   npm install
-   ```
+Clone the project repository:
 
-4. Start in development mode:
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+```
 
-   ```bash
-   npm run dev
-   ```
+Navigate to the project folder:
 
-   Or start normally:
+```bash
+cd lab-03
+```
 
-   ```bash
-   npm start
-   ```
+Install dependencies:
 
-The server uses port `3000` by default. To use another port, set the `PORT` environment variable. No credentials or `.env` values are required for this local version. The SQLite database file is created automatically.
+```bash
+npm install
+```
 
-## Endpoints
+Start the development server:
 
-| Method | Path | Description |
-|---|---|---|
-| GET | `/books` | List books with search, sorting, pagination and price filters |
-| GET | `/books/:id` | Retrieve one book by ID |
-| POST | `/books` | Create a book after validating the request body |
-| PUT | `/books/:id` | Update a book after validating the request body |
-| DELETE | `/books/:id` | Delete a book by ID |
+```bash
+npm run dev
+```
 
-### GET `/books` query parameters
+The local API runs at:
 
-| Parameter | Default | Description |
-|---|---|---|
-| `search_q` | empty string | Partial title search using `LIKE` |
-| `order_by` | `id` | Sort column: `id`, `title`, `author`, or `price` |
-| `order` | `ASC` | Sort direction: `ASC` or `DESC` |
-| `limit` | `10` | Maximum number of records (1–100) |
-| `offset` | `0` | Number of records to skip |
-| `min_price` | none | Minimum price, inclusive |
-| `max_price` | none | Maximum price, inclusive |
+```text
+http://localhost:3000
+```
+
+## 5. Deployment
+
+The REST API is deployed using Render.
+
+**Live API URL:**
+
+[https://lab-3-lsz3.onrender.com](https://lab-3-lsz3.onrender.com)
+
+**Get all books:**
+
+[https://lab-3-lsz3.onrender.com/books](https://lab-3-lsz3.onrender.com/books)
+
+**Build Command:**
+
+```bash
+npm install
+```
+
+**Start Command:**
+
+```bash
+npm start
+```
+
+## 6. API Endpoints
+
+| HTTP Method | Endpoint     | Description           |
+| ----------- | ------------ | --------------------- |
+| GET         | `/books`     | Retrieve all books    |
+| GET         | `/books/:id` | Retrieve a book by ID |
+| POST        | `/books`     | Add a new book        |
+| PUT         | `/books/:id` | Update a book         |
+| DELETE      | `/books/:id` | Delete a book         |
+
+## 7. Searching
+
+The API supports partial title searching using the SQL `LIKE` operator.
 
 Example:
 
-```text
-http://localhost:3000/books?search_q=Harry&order_by=price&order=ASC&limit=5&offset=0&min_price=100&max_price=500
+```http
+GET /books?search_q=The
 ```
 
-## Request body for POST and PUT
+This returns books whose titles contain the search term.
 
-Send JSON with all three fields. `price` must be a JSON number, not a quoted string.
+## 8. Sorting
+
+Books can be sorted using `order_by` and `order`.
+
+Example:
+
+```http
+GET /books?order_by=title&order=ASC
+```
+
+- ASC: Ascending order
+- DESC: Descending order
+
+## 9. Pagination
+
+Pagination is implemented using `limit` and `offset`.
+
+Example:
+
+```http
+GET /books?limit=5&offset=0
+```
+
+This retrieves five books starting from the first record.
+
+## 10. Price-Range Filtering
+
+The API supports filtering books by minimum and maximum prices.
+
+Example:
+
+```http
+GET /books?min_price=100&max_price=500
+```
+
+The SQL `BETWEEN` condition is used to retrieve books within the specified price range.
+
+## 11. Database
+
+SQLite is used to store book records in `books.db`.
+
+The database contains the following fields:
+
+- ID
+- Title
+- Author
+- Price
+
+The local database contains 20 book records. Book records added to the deployed Render database are stored separately from the local database.
+
+## 12. Input Validation and Error Handling
+
+- Missing title or author returns HTTP 400.
+- Invalid price returns HTTP 400.
+- Successfully created books return HTTP 201.
+- Successful update and delete operations return HTTP 200.
+- A book that does not exist returns HTTP 404.
+- Error responses use a consistent JSON message format.
+
+Example:
 
 ```json
 {
-  "title": "Harry Potter",
-  "author": "J.K. Rowling",
-  "price": 450
+  "message": "Book not found."
 }
 ```
 
-## Status codes
-- `200`: successful GET, update or delete
-- `201`: successful creation
-- `400`: invalid input or query parameter
-- `404`: book or route not found
-- `500`: unexpected database/server error
+## 13. Debugging Tasks
 
-## Postman test list
+The following debugging scenarios were demonstrated:
 
-Use `http://localhost:3000` as the base URL.
+1. **Port Conflict (EADDRINUSE):** Identified an occupied port and resolved it by stopping the existing server process.
+2. **Wrong Import Path:** Identified and corrected an incorrect database module path.
+3. **Wrong Table Name:** Corrected the table name from `book` to `books`.
+4. **Missing Await:** Demonstrated how adding `await` retrieves resolved Promise data instead of displaying a Promise object.
 
-| Test | Method and URL | Body / expected result |
-|---|---|---|
-| List books | GET `/books` | 200 |
-| Search title | GET `/books?search_q=Harry` | 200 |
-| Sort | GET `/books?order_by=price&order=DESC` | 200 |
-| Pagination | GET `/books?limit=5&offset=0` | 200 |
-| Price range | GET `/books?min_price=100&max_price=500` | 200 |
-| Combined filters | GET `/books?search_q=Harry&order_by=price&order=ASC&limit=5&offset=0&min_price=100&max_price=500` | 200 |
-| Create book | POST `/books` | Valid JSON; 201 |
-| Missing title | POST `/books` | Omit title; 400 |
-| Missing author | POST `/books` | Omit author; 400 |
-| Non-numeric price | POST `/books` | `"price": "450"`; 400 |
-| Get existing ID | GET `/books/1` | 200 if ID 1 exists |
-| Get missing ID | GET `/books/99999` | 404 if absent |
-| Invalid sort column | GET `/books?order_by=unknown` | 400 |
-| Invalid sort direction | GET `/books?order=SIDEWAYS` | 400 |
-| Invalid price range | GET `/books?min_price=500&max_price=100` | 400 |
-| Update existing ID | PUT `/books/1` | Valid JSON; 200 if ID exists |
-| Update missing ID | PUT `/books/99999` | 404 if absent |
-| Delete existing ID | DELETE `/books/1` | 200 if ID exists |
-| Delete missing ID | DELETE `/books/99999` | 404 if absent |
+## 14. API Testing
 
-For create/update, use Body → raw → JSON in Postman. For invalid-price testing, send `"price": "450"` with quotes to verify the API rejects a string.
+The API was tested using Postman.
 
-## Debugging notes
+The following operations were tested:
 
-1. `EADDRINUSE`: another process is already using the port. Stop the other server or select a free port using the `PORT` environment variable.
-2. Wrong import path: verify that `server.js` uses `require("./database")` and that `database.js` is in the same directory.
-3. `no such table`: verify that the SQL table name is `books` and that database initialization runs before requests are handled.
-4. Missing `await`: when using Promise-based database methods, await the operation inside an `async` function. This project uses SQLite callbacks, so the callback handles completion and results.
+- GET all books
+- GET book by ID
+- POST a new book
+- PUT update a book
+- DELETE a book
+- Searching by title
+- Sorting books
+- Pagination
+- Price-range filtering
+- Input validation
+- Error handling
 
-## Screenshots
+## 15. Screenshots
 
-Save screenshots in the `screenshots/` directory and embed them below. Replace these example filenames with your actual screenshot filenames.
+Screenshots of API testing, debugging demonstrations and deployment are included in the `screenshots` folder.
 
-```markdown
-![Create book success](screenshots/post-create-book.png)
-![Get books](screenshots/get-books.png)
-![Validation error](screenshots/post-validation-error.png)
-![Not found response](screenshots/get-book-not-found.png)
-```
+## 16. Deployment and Database Note
 
-## Notes: problems faced and solutions
-Write the actual issues you encountered while completing the lab and how you resolved them.
+The application is deployed on Render and can be accessed through the live API URL.
 
-## Submission checklist
-- [ ] Replace student detail placeholders.
-- [ ] Add actual live URL, or explain why deployment was not possible.
-- [ ] Add screenshots for successful responses, error cases and database view.
-- [ ] Ensure screenshots are displayed in this README.
-- [ ] Do not commit `node_modules`, `.env` or `books.db`.
-- [ ] Commit regularly with meaningful messages.
-- [ ] Push the course repository and share it with faculty.
+The local SQLite database and deployed SQLite database are separate. Records stored locally are not automatically transferred to Render.
+
+## 17. Conclusion
+
+This lab helped me understand backend development and RESTful API creation using Node.js, Express.js and SQLite.
+
+I learned how to implement CRUD operations, connect an SQLite database, perform searching, sorting, pagination and price filtering, validate input, handle errors and debug common backend issues.
+
+I also learned how to use GitHub for version control and Render for deploying a backend application.
+
+**End of Lab 3 Submission.**
+
